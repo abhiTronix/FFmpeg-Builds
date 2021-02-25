@@ -5,7 +5,7 @@ on:
   repository_dispatch:
     types: [build]
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '30 0 * * *'
 
 jobs:
   purge_artifacts:
@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win64]
+        target: [win32, win64]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -71,8 +71,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win64]
-        variant: [gpl,lgpl,gpl vulkan,lgpl vulkan,gpl 4.3,lgpl 4.3,gpl-shared,lgpl-shared,gpl-shared vulkan,lgpl-shared vulkan,gpl-shared 4.3,lgpl-shared 4.3]
+        target: [win32, win64]
+        variant: [gpl]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -102,8 +102,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win64]
-        variant: [gpl,lgpl,gpl vulkan,lgpl vulkan,gpl 4.3,lgpl 4.3,gpl-shared,lgpl-shared,gpl-shared vulkan,lgpl-shared vulkan,gpl-shared 4.3,lgpl-shared 4.3]
+        target: [win32, win64]
+        variant: [gpl]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
