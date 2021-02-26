@@ -5,7 +5,7 @@ on:
   repository_dispatch:
     types: [build]
   schedule:
-    - cron: '30 0 * * *'
+    - cron: '0 0 25 * *'
 
 jobs:
   purge_artifacts:
