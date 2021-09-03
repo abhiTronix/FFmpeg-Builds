@@ -74,6 +74,10 @@ EOF
 
 docker run --rm -i $TTY_ARG "${UIDARGS[@]}" -v $PWD/ffbuild:/ffbuild -v "$BUILD_SCRIPT":/build.sh "$IMAGE" bash /build.sh
 
+mkdir -p artifacts
+ARTIFACTS_PATH="$PWD/artifacts"
+BUILD_NAME="ffmpeg-static-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}"
+
 mkdir -p "ffbuild/pkgroot/$BUILD_NAME"
 package_variant ffbuild/prefix "ffbuild/pkgroot/$BUILD_NAME"
 
