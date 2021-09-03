@@ -1,18 +1,13 @@
 #!/bin/bash
 
 HEADERS_REPO="https://github.com/KhronosGroup/OpenCL-Headers.git"
-HEADERS_COMMIT="d1b936b72b9610626ecab8a991cec18348fba047"
+HEADERS_COMMIT="1bb9ec797d14abed6167e3a3d66ede25a702a5c7"
 
 LOADER_REPO="https://github.com/KhronosGroup/OpenCL-ICD-Loader.git"
-LOADER_COMMIT="99df8d88f7509739be7849da03a9fb1fb8bcbfa4"
+LOADER_COMMIT="4e65bd5db0a0a87637fddc081a70d537fc2a9e70"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
@@ -40,14 +35,16 @@ ffbuild_dockerbuild() {
     echo "Description: OpenCL ICD Loader" >> OpenCL.pc
     echo "Version: 9999" >> OpenCL.pc
     echo "Libs: -L\${libdir} -lOpenCL" >> OpenCL.pc
-    echo "Libs.private: -lole32 -lshlwapi -lcfgmgr32" >> OpenCL.pc
     echo "Cflags: -I\${includedir}" >> OpenCL.pc
+
+    if [[ $TARGET == linux* ]]; then
+        echo "Libs.private: -ldl" >> OpenCL.pc
+    elif [[ $TARGET == win* ]]; then
+        echo "Libs.private: -lole32 -lshlwapi -lcfgmgr32" >> OpenCL.pc
+    fi
 
     mkdir -p "$FFBUILD_PREFIX"/lib/pkgconfig
     mv OpenCL.pc "$FFBUILD_PREFIX"/lib/pkgconfig/OpenCL.pc
-
-    cd ../../..
-    rm -rf opencl
 }
 
 ffbuild_configure() {

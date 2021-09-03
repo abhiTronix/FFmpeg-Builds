@@ -1,15 +1,10 @@
 #!/bin/bash
 
 DAV1D_REPO="https://code.videolan.org/videolan/dav1d.git"
-DAV1D_COMMIT="be5200c4f072265add3f578f0b6f1a4ebc117000"
+DAV1D_COMMIT="324778b2910dffc11ba9b0c24d1a31bdbc662d20"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
@@ -24,7 +19,7 @@ ffbuild_dockerbuild() {
         --default-library=static
     )
 
-    if [[ $TARGET == win* ]]; then
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
             --cross-file=/cross.meson
         )
@@ -33,12 +28,9 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
-    meson "${myconf[@]}" .. || return -1
-    ninja -j$(nproc) || return -1
-    ninja install || return -1
-
-    cd ../..
-    rm -rf dav1d
+    meson "${myconf[@]}" ..
+    ninja -j$(nproc)
+    ninja install
 }
 
 ffbuild_configure() {

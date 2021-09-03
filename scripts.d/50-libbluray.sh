@@ -1,22 +1,17 @@
 #!/bin/bash
 
 LIBBLURAY_REPO="https://code.videolan.org/videolan/libbluray.git"
-LIBBLURAY_COMMIT="79429a524a1f339f4c2e6c90bb14939ab767ab00"
+LIBBLURAY_COMMIT="06d7ce99531eb643a6f165424373d1ab72178a51"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
     git-mini-clone "$LIBBLURAY_REPO" "$LIBBLURAY_COMMIT" libbluray
     cd libbluray
 
-    ./bootstrap || return -1
+    ./bootstrap
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
@@ -32,7 +27,7 @@ ffbuild_dockerbuild() {
         --disable-bdjava-jar
     )
 
-    if [[ $TARGET == win* ]]; then
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
             --host="$FFBUILD_TOOLCHAIN"
         )
@@ -44,9 +39,6 @@ ffbuild_dockerbuild() {
     ./configure "${myconf[@]}"
     make -j$(nproc)
     make install
-
-    cd ..
-    rm -rf libbluray
 }
 
 ffbuild_configure() {

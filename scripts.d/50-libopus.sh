@@ -1,22 +1,17 @@
 #!/bin/bash
 
 OPUS_REPO="https://github.com/xiph/opus.git"
-OPUS_COMMIT="d633f523e36e3b6d01cc6d57386458d770d618be"
+OPUS_COMMIT="6b6035ae4a29abbd237463d84a45fbeb0d92bc18"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
     git-mini-clone "$OPUS_REPO" "$OPUS_COMMIT" opus
     cd opus
 
-    ./autogen.sh || return -1
+    ./autogen.sh
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
@@ -25,7 +20,7 @@ ffbuild_dockerbuild() {
         --disable-extra-programs
     )
 
-    if [[ $TARGET == win* ]]; then
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
             --host="$FFBUILD_TOOLCHAIN"
         )
@@ -34,12 +29,9 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
-    ./configure "${myconf[@]}" || return -1
-    make -j$(nproc) || return -1
-    make install || return -1
-
-    cd ..
-    rm -rf opus
+    ./configure "${myconf[@]}"
+    make -j$(nproc)
+    make install
 }
 
 ffbuild_configure() {

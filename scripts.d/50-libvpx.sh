@@ -1,15 +1,10 @@
 #!/bin/bash
 
 LIBVPX_REPO="https://chromium.googlesource.com/webm/libvpx"
-LIBVPX_COMMIT="02392eecccde436a76aca6c86a6fdf643e98eb38"
+LIBVPX_COMMIT="15a75b45304248f746634b43763c496322bf8968"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
@@ -37,17 +32,19 @@ ffbuild_dockerbuild() {
             --target=x86-win32-gcc
         )
         export CROSS="$FFBUILD_CROSS_PREFIX"
+    elif [[ $TARGET == linux* ]]; then
+        myconf+=(
+            --target=x86_64-linux-gcc
+        )
+        export CROSS="$FFBUILD_CROSS_PREFIX"
     else
         echo "Unknown target"
         return -1
     fi
 
-    ./configure "${myconf[@]}" || return -1
-    make -j$(nproc) || return -1
-    make install || return -1
-
-    cd ..
-    rm -rf libvpx
+    ./configure "${myconf[@]}"
+    make -j$(nproc)
+    make install
 }
 
 ffbuild_configure() {

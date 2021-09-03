@@ -1,15 +1,10 @@
 #!/bin/bash
 
 AMF_REPO="https://github.com/GPUOpen-LibrariesAndSDKs/AMF.git"
-AMF_COMMIT="c7f58ee7853a3736670873e068180f6d83a81c7b"
+AMF_COMMIT="3ee61d73b5599dcadbf86621a9f9c2d7e9c05811"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
@@ -17,10 +12,7 @@ ffbuild_dockerbuild() {
     cd amf
 
     mkdir -p "$FFBUILD_PREFIX"/include
-    mv amf/public/include "$FFBUILD_PREFIX"/include/AMF || return -1
-
-    cd ..
-    rm -rf amf
+    mv amf/public/include "$FFBUILD_PREFIX"/include/AMF
 }
 
 ffbuild_configure() {

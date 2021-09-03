@@ -3,8 +3,15 @@ set -xe
 cd "$(dirname "$0")"
 source util/vars.sh
 
-docker build --tag "$BASE_IMAGE" images/base
-docker build --build-arg GH_REPO="$REPO" --tag "$TARGET_IMAGE" "images/base-${TARGET}"
+export DOCKER_BUILDKIT=1
+
+if [[ -z "$QUICKBUILD" ]]; then
+    if grep "FROM.*base.*" "images/base-${TARGET}/Dockerfile" >/dev/null 2>&1; then
+        docker build --tag "$BASE_IMAGE" images/base
+    fi
+
+    docker build --build-arg GH_REPO="$REPO" --tag "$TARGET_IMAGE" "images/base-${TARGET}"
+fi
 
 ./generate.sh "$TARGET" "$VARIANT" "${ADDINS[@]}"
 

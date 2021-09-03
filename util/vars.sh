@@ -14,6 +14,8 @@ if ! [[ -f "variants/${TARGET}-${VARIANT}.sh" ]]; then
     exit -1
 fi
 
+LICENSE_FILE="COPYING.LGPLv2.1"
+
 ADDINS=()
 ADDINS_STR=""
 while [[ "$#" -gt 0 ]]; do
@@ -30,10 +32,22 @@ done
 
 REPO="${GITHUB_REPOSITORY:-btbn/ffmpeg-builds}"
 REPO="${REPO,,}"
-REGISTRY="docker.pkg.github.com"
+REGISTRY="ghcr.io"
 BASE_IMAGE="${REGISTRY}/${REPO}/base:latest"
 TARGET_IMAGE="${REGISTRY}/${REPO}/base-${TARGET}:latest"
 IMAGE="${REGISTRY}/${REPO}/${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}:latest"
+
+ffbuild_dockerstage() {
+    to_df "RUN --mount=src=${SELF},dst=/stage.sh run_stage /stage.sh"
+}
+
+ffbuild_dockerlayer() {
+    to_df "COPY --from=${SELFLAYER} \$FFBUILD_PREFIX/. \$FFBUILD_PREFIX"
+}
+
+ffbuild_dockerfinal() {
+    to_df "COPY --from=${PREVLAYER} \$FFBUILD_PREFIX/. \$FFBUILD_PREFIX"
+}
 
 ffbuild_configure() {
     return 0
@@ -56,6 +70,14 @@ ffbuild_cxxflags() {
 }
 
 ffbuild_uncxxflags() {
+    return 0
+}
+
+ffbuild_ldexeflags() {
+    return 0
+}
+
+ffbuild_unldexeflags() {
     return 0
 }
 

@@ -1,16 +1,10 @@
 #!/bin/bash
 
-LILV_REPO="https://gitlab.com/lv2/lilv.git"
+LILV_REPO="https://github.com/lv2/lilv.git"
 LILV_COMMIT="71a2ff5170caaa052814cce19b3de927d10d0e24"
 
 ffbuild_enabled() {
-    # Still has missing dependencies
-    return -1
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
+    return 0
 }
 
 ffbuild_dockerbuild() {
@@ -31,8 +25,7 @@ ffbuild_dockerbuild() {
     ./waf -j$(nproc)
     ./waf install
 
-    cd ..
-    rm -rf lilv
+    sed -i 's/Cflags:/Cflags: -DLILV_STATIC/' "$FFBUILD_PREFIX"/lib/pkgconfig/lilv-0.pc
 }
 
 ffbuild_configure() {

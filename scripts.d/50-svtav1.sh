@@ -1,17 +1,11 @@
 #!/bin/bash
 
 SVTAV1_REPO="https://gitlab.com/AOMediaCodec/SVT-AV1.git"
-SVTAV1_COMMIT="6870e6cadc166235b8fb5aa286564e0fb5039e4f"
+SVTAV1_COMMIT="09555148333e849ce5f04f891672a86304149e47"
 
 ffbuild_enabled() {
     [[ $TARGET == win32 ]] && return -1
-    [[ $ADDINS_STR == *4.3* ]] && return -1
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
@@ -24,9 +18,6 @@ ffbuild_dockerbuild() {
     cmake -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_APPS=OFF ..
     make -j$(nproc)
     make install
-
-    cd ../..
-    rm -rf svtav1
 }
 
 ffbuild_configure() {
@@ -34,6 +25,5 @@ ffbuild_configure() {
 }
 
 ffbuild_unconfigure() {
-    [[ $ADDINS_STR == *4.3* ]] && return 0
     echo --disable-libsvtav1
 }

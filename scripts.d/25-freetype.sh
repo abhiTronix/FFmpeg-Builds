@@ -1,22 +1,17 @@
 #!/bin/bash
 
 # https://sourceforge.net/projects/freetype/files/freetype2/
-FREETYPE_SRC="https://sourceforge.net/projects/freetype/files/freetype2/2.10.4/freetype-2.10.4.tar.xz/download"
+FREETYPE_SRC="https://sourceforge.net/projects/freetype/files/freetype2/2.11.0/freetype-2.11.0.tar.xz/download"
 
 ffbuild_enabled() {
     return 0
 }
 
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
-}
-
 ffbuild_dockerbuild() {
     mkdir ft
     cd ft
-    wget -O ft.tar.gz "$FREETYPE_SRC" || return -1
-    tar xaf ft.tar.gz || return -1
+    wget -O ft.tar.gz "$FREETYPE_SRC"
+    tar xaf ft.tar.gz
     rm ft.tar.gz
     cd freetype*
 
@@ -26,7 +21,7 @@ ffbuild_dockerbuild() {
         --enable-static
     )
 
-    if [[ $TARGET == win* ]]; then
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
             --host="$FFBUILD_TOOLCHAIN"
         )
@@ -35,12 +30,9 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
-    ./configure "${myconf[@]}" || return -1
-    make -j$(nproc) || return -1
-    make install || return -1
-
-    cd ../..
-    rm -rf ft
+    ./configure "${myconf[@]}"
+    make -j$(nproc)
+    make install
 }
 
 ffbuild_configure() {

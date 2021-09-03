@@ -1,22 +1,17 @@
 #!/bin/bash
 
 LIBUDFREAD_REPO="https://code.videolan.org/videolan/libudfread.git"
-LIBUDFREAD_COMMIT="2ba6fa9a0acfcb1c65284d4e923be57982841b39"
+LIBUDFREAD_COMMIT="b8ada6557b5336f4d3f144d8604ddc0ccf51f0c2"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
     git-mini-clone "$LIBUDFREAD_REPO" "$LIBUDFREAD_COMMIT" libudfread
     cd libudfread
 
-    ./bootstrap || return -1
+    ./bootstrap
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
@@ -25,7 +20,7 @@ ffbuild_dockerbuild() {
         --with-pic
     )
 
-    if [[ $TARGET == win* ]]; then
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
             --host="$FFBUILD_TOOLCHAIN"
         )
@@ -39,7 +34,4 @@ ffbuild_dockerbuild() {
     make install
 
     ln -s libudfread.pc "$FFBUILD_PREFIX"/lib/pkgconfig/udfread.pc
-
-    cd ..
-    rm -rf libudfread
 }

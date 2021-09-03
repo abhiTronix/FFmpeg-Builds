@@ -1,15 +1,10 @@
 #!/bin/bash
 
 HARFBUZZ_REPO="https://github.com/harfbuzz/harfbuzz.git"
-HARFBUZZ_COMMIT="cf203936d7ba74dfb567a92378476c3125010023"
+HARFBUZZ_COMMIT="34e0b28faef0f4157a47cc3e2feb7360f82232fd"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
@@ -23,7 +18,7 @@ ffbuild_dockerbuild() {
         --with-pic
     )
 
-    if [[ $TARGET == win* ]]; then
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
             --host="$FFBUILD_TOOLCHAIN"
         )
@@ -34,10 +29,7 @@ ffbuild_dockerbuild() {
 
     export LIBS="-lpthread"
 
-    ./autogen.sh "${myconf[@]}" || return -1
-    make -j$(nproc) || return -1
-    make install || return -1
-
-    cd ..
-    rm -rf harfbuzz
+    ./autogen.sh "${myconf[@]}"
+    make -j$(nproc)
+    make install
 }

@@ -1,22 +1,17 @@
 #!/bin/bash
 
 MFX_REPO="https://github.com/lu-zero/mfx_dispatch.git"
-MFX_COMMIT="2cd279f1e8a277c843025c8713c6ed3b4c42b032"
+MFX_COMMIT="0349e3bc5bcdb268e94a334bf8a2bdeb6a369840"
 
 ffbuild_enabled() {
     return 0
-}
-
-ffbuild_dockerstage() {
-    to_df "ADD $SELF /stage.sh"
-    to_df "RUN run_stage"
 }
 
 ffbuild_dockerbuild() {
     git-mini-clone "$MFX_REPO" "$MFX_COMMIT" mfx
     cd mfx
 
-    autoreconf -i || return -1
+    autoreconf -i
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
@@ -25,7 +20,7 @@ ffbuild_dockerbuild() {
         --with-pic
     )
 
-    if [[ $TARGET == win* ]]; then
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
         myconf+=(
             --host="$FFBUILD_TOOLCHAIN"
         )
@@ -34,12 +29,9 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
-    ./configure "${myconf[@]}" || return -1
-    make -j$(nproc) || return -1
-    make install || return -1
-
-    cd ..
-    rm -rf mfx
+    ./configure "${myconf[@]}"
+    make -j$(nproc)
+    make install
 }
 
 ffbuild_configure() {
