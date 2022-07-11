@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LIBVPX_REPO="https://chromium.googlesource.com/webm/libvpx"
-LIBVPX_COMMIT="15a75b45304248f746634b43763c496322bf8968"
+LIBVPX_COMMIT="7b1b9f7cd23e085d97c26ed026d2c817d78a14d6"
 
 ffbuild_enabled() {
     return 0
@@ -32,9 +32,14 @@ ffbuild_dockerbuild() {
             --target=x86-win32-gcc
         )
         export CROSS="$FFBUILD_CROSS_PREFIX"
-    elif [[ $TARGET == linux* ]]; then
+    elif [[ $TARGET == linux64 ]]; then
         myconf+=(
             --target=x86_64-linux-gcc
+        )
+        export CROSS="$FFBUILD_CROSS_PREFIX"
+    elif [[ $TARGET == linuxarm64 ]]; then
+        myconf+=(
+            --target=arm64-linux-gcc
         )
         export CROSS="$FFBUILD_CROSS_PREFIX"
     else

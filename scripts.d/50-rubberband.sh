@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# https://breakfastquay.com/rubberband/
-RUBBERBAND_SRC="https://breakfastquay.com/files/releases/rubberband-1.9.2.tar.bz2"
+RUBBERBAND_REPO="https://github.com/breakfastquay/rubberband.git"
+RUBBERBAND_COMMIT="4cff1741664918791474da9a9d41f48cc3119229"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
@@ -9,19 +9,14 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerbuild() {
-    mkdir rubberband
+    git-mini-clone "$RUBBERBAND_REPO" "$RUBBERBAND_COMMIT" rubberband
     cd rubberband
-
-    wget "$RUBBERBAND_SRC" -O rubberband.tar.gz
-    tar xaf rubberband.tar.gz
-    rm rubberband.tar.gz
-    cd rubberband*
 
     mkdir build && cd build
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
-        -Dno_shared=true
+        -Ddefault_library=static
     )
 
     if [[ $TARGET == win* || $TARGET == linux* ]]; then

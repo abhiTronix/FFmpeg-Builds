@@ -1,9 +1,10 @@
 #!/bin/bash
 
 MFX_REPO="https://github.com/lu-zero/mfx_dispatch.git"
-MFX_COMMIT="0349e3bc5bcdb268e94a334bf8a2bdeb6a369840"
+MFX_COMMIT="7e4d221c36c630c1250b23a5dfa15657bc04c10c"
 
 ffbuild_enabled() {
+    [[ $TARGET == linuxarm64 ]] && return -1
     return 0
 }
 
@@ -32,6 +33,8 @@ ffbuild_dockerbuild() {
     ./configure "${myconf[@]}"
     make -j$(nproc)
     make install
+
+    ln -s libmfx.pc "$FFBUILD_PREFIX"/lib/pkgconfig/mfx.pc
 }
 
 ffbuild_configure() {

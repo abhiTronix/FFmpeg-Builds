@@ -16,14 +16,20 @@ ffbuild_dockerbuild() {
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
-        --disable-shared
-        --enable-static
+        --enable-shared
+        --disable-static
         --with-pic
         --without-xmlto
         --without-fop
         --without-xsltproc
         --without-lint
     )
+
+    if [[ $TARGET == linuxarm64 ]]; then
+        myconf+=(
+            --disable-malloc0returnsnull
+        )
+    fi
 
     if [[ $TARGET == linux* ]]; then
         myconf+=(
@@ -34,7 +40,13 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
+    export CFLAGS="$RAW_CFLAGS"
+    export LDFLAFS="$RAW_LDFLAGS"
+
     ./configure "${myconf[@]}"
     make -j$(nproc)
     make install
+
+    gen-implib "$FFBUILD_PREFIX"/lib/{libXext.so.6,libXext.a}
+    rm "$FFBUILD_PREFIX"/lib/libXext{.so*,.la}
 }

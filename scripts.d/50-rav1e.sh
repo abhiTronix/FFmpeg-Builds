@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RAV1E_REPO="https://github.com/xiph/rav1e.git"
-RAV1E_COMMIT="45d6754f6389179fac085aedfa97af3b483aa896"
+RAV1E_COMMIT="a8d1e46e0dba460345e70a519d3becd079bb3acd"
 
 ffbuild_enabled() {
     [[ $TARGET == win32 ]] && return -1
@@ -24,6 +24,8 @@ ffbuild_dockerbuild() {
             --target="$FFBUILD_RUST_TARGET"
         )
     fi
+
+    export CC="${FFBUILD_CROSS_PREFIX}gcc"
 
     cargo cinstall "${myconf[@]}"
 }
