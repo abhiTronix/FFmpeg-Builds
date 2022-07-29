@@ -100,7 +100,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win32, win64]
-        variant: [gpl 4.4, gpl 5.0]
+        variant: [gpl 4.4]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -141,7 +141,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win32, win64]
-        variant: [gpl 4.4, gpl 5.0]
+        variant: [gpl 4.4]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -181,7 +181,7 @@ jobs:
           RELDATE="$(date +'%Y-%m-%d %H:%M')"
           NAME="Auto-Build $RELDATE"
           TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')"
-          hub release create $(for a in artifacts/*.{zip,tar.xz}; do echo -a $a; done) -m "$NAME" -t "master" "$TAGNAME"
+          hub release create $(for a in artifacts/*.zip; do echo -a $a; done) -m "$NAME" -t "master" "$TAGNAME"
           echo "::set-output name=tag_name::${TAGNAME}"
           echo "::set-output name=rel_date::${RELDATE}"
         env:
@@ -191,7 +191,7 @@ jobs:
           set -xe
           shopt -s nullglob
           mkdir latest_artifacts
-          ./util/repack_latest.sh latest_artifacts artifacts/*.{zip,tar.xz}
+          ./util/repack_latest.sh latest_artifacts artifacts/*.zip
           NAME="Latest Auto-Build (${{ steps.create_release.outputs.rel_date }})"
           TAGNAME="latest"
           hub release delete "$TAGNAME" || true

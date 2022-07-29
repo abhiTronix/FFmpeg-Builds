@@ -33,19 +33,19 @@ for script in scripts.d/**/*.sh; do
     FF_LIBS+=" $(get_output $script libs)"
 done
 
-FF_CONFIGURE="$(xargs <<< "$FF_CONFIGURE")"
-FF_CFLAGS="$(xargs <<< "$FF_CFLAGS")"
-FF_CXXFLAGS="$(xargs <<< "$FF_CXXFLAGS")"
-FF_LDFLAGS="$(xargs <<< "$FF_LDFLAGS")"
-FF_LDEXEFLAGS="$(xargs <<< "$FF_LDEXEFLAGS")"
-FF_LIBS="$(xargs <<< "$FF_LIBS")"
+FF_CONFIGURE="$(xargs <<<"$FF_CONFIGURE")"
+FF_CFLAGS="$(xargs <<<"$FF_CFLAGS")"
+FF_CXXFLAGS="$(xargs <<<"$FF_CXXFLAGS")"
+FF_LDFLAGS="$(xargs <<<"$FF_LDFLAGS")"
+FF_LDEXEFLAGS="$(xargs <<<"$FF_LDEXEFLAGS")"
+FF_LIBS="$(xargs <<<"$FF_LIBS")"
 
 TESTFILE="uidtestfile"
 rm -f "$TESTFILE"
 docker run --rm -v "$PWD:/uidtestdir" "$IMAGE" touch "/uidtestdir/$TESTFILE"
 DOCKERUID="$(stat -c "%u" "$TESTFILE")"
 rm -f "$TESTFILE"
-[[ "$DOCKERUID" != "$(id -u)" ]] && UIDARGS=( -u "$(id -u):$(id -g)" ) || UIDARGS=()
+[[ "$DOCKERUID" != "$(id -u)" ]] && UIDARGS=(-u "$(id -u):$(id -g)") || UIDARGS=()
 
 rm -rf ffbuild
 mkdir ffbuild
@@ -80,7 +80,7 @@ docker run --rm -i $TTY_ARG "${UIDARGS[@]}" -v $PWD/ffbuild:/ffbuild -v "$BUILD_
 
 mkdir -p artifacts
 ARTIFACTS_PATH="$PWD/artifacts"
-BUILD_NAME="ffmpeg-$(./ffbuild/ffmpeg/ffbuild/version.sh ffbuild/ffmpeg)-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}"
+BUILD_NAME="ffmpeg-static-${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}"
 
 mkdir -p "ffbuild/pkgroot/$BUILD_NAME"
 package_variant ffbuild/prefix "ffbuild/pkgroot/$BUILD_NAME"
@@ -101,5 +101,5 @@ rm -rf ffbuild
 
 if [[ -n "$GITHUB_ACTIONS" ]]; then
     echo "::set-output name=build_name::${BUILD_NAME}"
-    echo "${OUTPUT_FNAME}" > "${ARTIFACTS_PATH}/${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}.txt"
+    echo "${OUTPUT_FNAME}" >"${ARTIFACTS_PATH}/${TARGET}-${VARIANT}${ADDINS_STR:+-}${ADDINS_STR}.txt"
 fi
