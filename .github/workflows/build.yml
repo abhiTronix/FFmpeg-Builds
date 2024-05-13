@@ -64,6 +64,7 @@ jobs:
       - name: Get download cache key
         id: dl_cache
         run: |
+          chmod +x ./util/get_dl_cache_tag.sh
           echo "dltagname=$(./util/get_dl_cache_tag.sh)" >> $GITHUB_OUTPUT
       - name: Cache
         uses: actions/cache@v4
@@ -74,6 +75,8 @@ jobs:
             download-cache-
       - name: Update Cache
         run: |
+          chmod +x ./download.sh
+          chmod +x ./util/clean_cache.sh
           set -e
           ./download.sh
           ./util/clean_cache.sh
