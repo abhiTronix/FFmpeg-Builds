@@ -1,7 +1,7 @@
 #!/bin/bash
 
-RAV1E_REPO="https://github.com/xiph/rav1e.git"
-RAV1E_COMMIT="a8d1e46e0dba460345e70a519d3becd079bb3acd"
+SCRIPT_REPO="https://github.com/xiph/rav1e.git"
+SCRIPT_COMMIT="c7c72b5530e391211c5d5f32b16394d1c7dc00cc"
 
 ffbuild_enabled() {
     [[ $TARGET == win32 ]] && return -1
@@ -9,25 +9,21 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$RAV1E_REPO" "$RAV1E_COMMIT" rav1e
-    cd rav1e
-
     local myconf=(
-        --prefix="$FFBUILD_PREFIX" \
-        --library-type=staticlib \
-        --crt-static \
+        --prefix="$FFBUILD_PREFIX"
+        --target="${FFBUILD_RUST_TARGET}"
+        --library-type=staticlib
+        --crt-static
         --release
     )
 
-    if [[ -n "$FFBUILD_RUST_TARGET" ]]; then
-        myconf+=(
-            --target="$FFBUILD_RUST_TARGET"
-        )
-    fi
+    # Pulls in target-libs for host tool builds otherwise.
+    # Luckily no target libraries are needed.
+    unset PKG_CONFIG_LIBDIR
 
-    export CC="${FFBUILD_CROSS_PREFIX}gcc"
+    cargo cinstall -v "${myconf[@]}"
 
-    cargo cinstall "${myconf[@]}"
+    chmod 644 "${FFBUILD_PREFIX}"/lib/*rav1e*
 }
 
 ffbuild_configure() {

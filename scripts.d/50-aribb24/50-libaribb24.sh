@@ -1,20 +1,17 @@
 #!/bin/bash
 
-ARIBB24_REPO="https://github.com/nkoriyama/aribb24.git"
-ARIBB24_COMMIT="5e9be272f96e00f15a2f3c5f8ba7e124862aec38"
+SCRIPT_REPO="https://github.com/nkoriyama/aribb24.git"
+SCRIPT_COMMIT="5e9be272f96e00f15a2f3c5f8ba7e124862aec38"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerstage() {
-    to_df "RUN --mount=src=${SELF},dst=/stage.sh --mount=src=patches/aribb24,dst=/patches run_stage /stage.sh"
+    to_df "RUN --mount=src=${SELF},dst=/stage.sh --mount=src=${SELFCACHE},dst=/cache.tar.xz --mount=src=patches/aribb24,dst=/patches run_stage /stage.sh"
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$ARIBB24_REPO" "$ARIBB24_COMMIT" aribb24
-    cd aribb24
-
     for patch in /patches/*.patch; do
         echo "Applying $patch"
         git am < "$patch"

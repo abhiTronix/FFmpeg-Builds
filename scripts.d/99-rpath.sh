@@ -1,11 +1,17 @@
 #!/bin/bash
 
+SCRIPT_SKIP="1"
+
 ffbuild_enabled() {
     [[ $TARGET == linux* ]]
 }
 
 ffbuild_dockerfinal() {
     return 0
+}
+
+ffbuild_dockerdl() {
+    true
 }
 
 ffbuild_dockerlayer() {

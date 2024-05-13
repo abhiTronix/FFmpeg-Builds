@@ -1,24 +1,35 @@
 #!/bin/bash
 
-LV2_REPO="https://github.com/lv2/lv2.git"
-LV2_COMMIT="d97a1a4daff228bdd62c68859959d13077e47026"
+SCRIPT_REPO="https://github.com/lv2/lv2.git"
+SCRIPT_COMMIT="e9d94328743d630e27a9d322015437fd9080695d"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$LV2_REPO" "$LV2_COMMIT" lv2
-    cd lv2
-    git submodule update --init --recursive --depth 1
+    mkdir build && cd build
 
-    local mywaf=(
+    local myconf=(
         --prefix="$FFBUILD_PREFIX"
-        --no-plugins
-        --no-coverage
+        --buildtype=release
+        --default-library=static
+        -Ddocs=disabled
+        -Dplugins=disabled
+        -Dtests=disabled
+        -Donline_docs=false
     )
 
-    CC="${FFBUILD_CROSS_PREFIX}gcc" CXX="${FFBUILD_CROSS_PREFIX}g++" ./waf configure "${mywaf[@]}"
-    ./waf -j$(nproc)
-    ./waf install
+    if [[ $TARGET == win* || $TARGET == linux* ]]; then
+        myconf+=(
+            --cross-file=/cross.meson
+        )
+    else
+        echo "Unknown target"
+        return -1
+    fi
+
+    meson "${myconf[@]}" ..
+    ninja -j"$(nproc)"
+    ninja install
 }

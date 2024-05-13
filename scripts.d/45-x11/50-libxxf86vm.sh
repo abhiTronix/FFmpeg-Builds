@@ -1,7 +1,7 @@
 #!/bin/bash
 
-LIBXXF86VM_REPO="https://gitlab.freedesktop.org/xorg/lib/libxxf86vm.git"
-LIBXXF86VM_COMMIT="7f43cd2a905e7b93b83c9ce81dabb768f6fa2bc7"
+SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxxf86vm.git"
+SCRIPT_COMMIT="546c0e93adc535dfaaa66277928887c8dc1f8e13"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -9,9 +9,6 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$LIBXXF86VM_REPO" "$LIBXXF86VM_COMMIT" libxxf86vm
-    cd libxxf86vm
-
     autoreconf -i
 
     local myconf=(

@@ -1,16 +1,13 @@
 #!/bin/bash
 
-VORBIS_REPO="https://github.com/xiph/vorbis.git"
-VORBIS_COMMIT="84c023699cdf023a32fa4ded32019f194afcdad0"
+SCRIPT_REPO="https://github.com/xiph/vorbis.git"
+SCRIPT_COMMIT="84c023699cdf023a32fa4ded32019f194afcdad0"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$VORBIS_REPO" "$VORBIS_COMMIT" vorbis
-    cd vorbis
-
     ./autogen.sh
 
     local myconf=(

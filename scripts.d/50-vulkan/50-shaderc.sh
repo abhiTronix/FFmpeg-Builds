@@ -1,19 +1,19 @@
 #!/bin/bash
 
-SHADERC_REPO="https://github.com/google/shaderc.git"
-SHADERC_COMMIT="7e2cfcf2b75c245fa3ceaf2e276180cbf8f107ea"
+SCRIPT_REPO="https://github.com/google/shaderc.git"
+SCRIPT_COMMIT="f59f0d11b80fd622383199c867137ededf89d43b"
 
 ffbuild_enabled() {
     [[ $ADDINS_STR == *4.4* ]] && return -1
     return 0
 }
 
+ffbuild_dockerdl() {
+    default_dl .
+    echo "./utils/git-sync-deps"
+}
+
 ffbuild_dockerbuild() {
-    git-mini-clone "$SHADERC_REPO" "$SHADERC_COMMIT" shaderc
-    cd shaderc
-
-    ./utils/git-sync-deps
-
     mkdir build && cd build
 
     cmake -GNinja -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" \

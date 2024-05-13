@@ -1,16 +1,13 @@
 #!/bin/bash
 
-SRT_REPO="https://github.com/Haivision/srt.git"
-SRT_COMMIT="e8b713e954345291e8d6e2314d1e5094a6a14179"
+SCRIPT_REPO="https://github.com/Haivision/srt.git"
+SCRIPT_COMMIT="38a3a165a1af92f6423de8c97646de07cba5e120"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$SRT_REPO" "$SRT_COMMIT" srt
-    cd srt
-
     mkdir build && cd build
 
     cmake -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" \

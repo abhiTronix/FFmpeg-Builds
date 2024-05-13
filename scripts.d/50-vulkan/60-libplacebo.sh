@@ -1,16 +1,23 @@
 #!/bin/bash
 
-PLACEBO_REPO="https://code.videolan.org/videolan/libplacebo.git"
-PLACEBO_COMMIT="db794a2fcc8214624c950752b04f6c23f8fc567d"
+SCRIPT_REPO="https://code.videolan.org/videolan/libplacebo.git"
+SCRIPT_COMMIT="47ea18ef47875aafe611d47e07a6314ccc92a916"
 
 ffbuild_enabled() {
     [[ $ADDINS_STR == *4.4* ]] && return -1
+    [[ $ADDINS_STR == *5.0* ]] && return -1
+    [[ $ADDINS_STR == *5.1* ]] && return -1
+    [[ $ADDINS_STR == *6.0* ]] && return -1
     return 0
 }
 
+ffbuild_dockerdl() {
+    default_dl .
+    echo "git submodule update --init --recursive"
+}
+
 ffbuild_dockerbuild() {
-    git-mini-clone "$PLACEBO_REPO" "$PLACEBO_COMMIT" placebo
-    cd placebo
+    sed -i 's/DPL_EXPORT/DPL_STATIC/' src/meson.build
 
     mkdir build && cd build
 
@@ -19,7 +26,7 @@ ffbuild_dockerbuild() {
         --buildtype=release
         --default-library=static
         -Dvulkan=enabled
-        -Dvulkan-link=false
+        -Dvk-proc-addr=disabled
         -Dvulkan-registry="$FFBUILD_PREFIX"/share/vulkan/registry/vk.xml
         -Dshaderc=enabled
         -Dglslang=disabled

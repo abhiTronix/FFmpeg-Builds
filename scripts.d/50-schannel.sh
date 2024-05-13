@@ -1,7 +1,13 @@
 #!/bin/bash
 
+SCRIPT_SKIP="1"
+
 ffbuild_enabled() {
     [[ $TARGET == win* ]]
+}
+
+ffbuild_dockerdl() {
+    true
 }
 
 ffbuild_dockerstage() {

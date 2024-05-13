@@ -1,7 +1,7 @@
 #!/bin/bash
 
-XORGMACROS_REPO="https://gitlab.freedesktop.org/xorg/util/macros.git"
-XORGMACROS_COMMIT="0326ba3c4caa34116c0e7e4af98661858cf25d1c"
+SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/util/macros.git"
+SCRIPT_COMMIT="7ed2b3798c030bd1729b699b446b43aba2ec606e"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -14,9 +14,6 @@ ffbuild_dockerlayer() {
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$XORGMACROS_REPO" "$XORGMACROS_COMMIT" xorg-macros
-    cd xorg-macros
-
     autoreconf -i
     ./configure --prefix="$FFBUILD_PREFIX"
     make -j"$(nproc)"

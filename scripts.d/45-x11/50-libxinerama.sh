@@ -1,7 +1,7 @@
 #!/bin/bash
 
-LIBXINERAMA_REPO="https://gitlab.freedesktop.org/xorg/lib/libxinerama.git"
-LIBXINERAMA_COMMIT="c5187f076d16601c15c59c5a2f05c0513d9f042b"
+SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libxinerama.git"
+SCRIPT_COMMIT="51c28095951676a5896437c4c3aa40fb1972bad2"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -9,9 +9,6 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$LIBXINERAMA_REPO" "$LIBXINERAMA_COMMIT" libxinerama
-    cd libxinerama
-
     autoreconf -i
 
     local myconf=(
