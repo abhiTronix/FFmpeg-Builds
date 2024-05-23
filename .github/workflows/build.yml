@@ -64,10 +64,11 @@ jobs:
       - name: Get download cache key
         id: dl_cache
         run: |
-          find ./util -type f -iname "*.sh" -exec chmod +x {} \;
-          find ./scripts.d -type f -iname "*.sh" -exec chmod +x {} \;
-          find ./addins -type f -iname "*.sh" -exec chmod +x {} \;
-          find ./variants -type f -iname "*.sh" -exec chmod +x {} \;
+          find ./util -type f -name "*.sh" -exec chmod +x {} \;
+          find ./scripts.d -type f -name "*.sh" -exec chmod +x {} \;
+          find ./addins -type f -name "*.sh" -exec chmod +x {} \;
+          find ./variants -type f -name "*.sh" -exec chmod +x {} \;
+          find . -type f -type f -name "*.sh" -exec chmod +x {} \;
           echo "dltagname=$(./util/get_dl_cache_tag.sh)" >> $GITHUB_OUTPUT
       - name: Cache
         uses: actions/cache@v4
